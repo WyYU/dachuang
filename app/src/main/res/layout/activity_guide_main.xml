@@ -36,13 +36,12 @@
         android:layout_marginTop="10dp"/>
 
     <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/btn_walknavi_normal"
-            android:layout_marginTop="100dp"
-            android:text="AR步行导航"
-            android:id="@+id/btn_walknavi_ar"
-            android:layout_alignParentRight="true"
-            android:layout_marginRight="20dp"/>
+        android:id="@+id/btn_walknavi_ar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/btn_walknavi_normal"
+        android:layout_alignParentBottom="true"
+        android:layout_marginEnd="45dp"
+        android:text="AR步行导航" />
 
 </RelativeLayout>

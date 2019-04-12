@@ -1,14 +1,21 @@
 package com.example.dell.dachuang.Activity;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationManager;
+import android.location.LocationProvider;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.baidu.mapapi.CoordType;
 import com.baidu.mapapi.SDKInitializer;
@@ -33,9 +40,13 @@ import com.baidu.mapapi.walknavi.adapter.IWRoutePlanListener;
 import com.baidu.mapapi.walknavi.model.WalkRoutePlanError;
 import com.baidu.mapapi.walknavi.params.WalkNaviLaunchParam;
 import com.baidu.mapapi.walknavi.params.WalkRouteNodeInfo;
+import com.example.dell.dachuang.Activity.location.BDLocationListener;
+import com.example.dell.dachuang.Activity.location.BDLocationManager;
 import com.example.dell.dachuang.R;
 
 import java.util.ArrayList;
+
+import Listener.MyLocationListener;
 
 public class ARActivity extends AppCompatActivity {
 	private final static String TAG = BNaviMainActivity.class.getSimpleName();
@@ -60,12 +71,22 @@ public class ARActivity extends AppCompatActivity {
 	private BitmapDescriptor bdEnd = BitmapDescriptorFactory
 			.fromResource(R.drawable.icon_end);
 
+	LocationManager locationManager;
+	MyLocationListener myLocationListener;
+	BDLocationListener bdLocationListener;
+	BDLocationManager bdLocationManager;
+	private double endx;
+	private double endy;
+	private double startx;
+	private double starty;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_guide_main);
-		requestPermission();
 		mMapView = (MapView) findViewById(R.id.mapview);
+		getLocation();
+		initData();
+		//initLocation();
 		initMapStatus();
 
         /*骑行导航入口*/
@@ -76,6 +97,7 @@ public class ARActivity extends AppCompatActivity {
 				startBikeNavi();
 			}
 		});
+		bikeBtn.setVisibility(View.INVISIBLE);
 
         /*普通步行导航入口*/
 		Button walkBtn = (Button) findViewById(R.id.btn_walknavi_normal);
@@ -86,6 +108,7 @@ public class ARActivity extends AppCompatActivity {
 				startWalkNavi();
 			}
 		});
+		walkBtn.setVisibility(View.INVISIBLE);
 
         /*AR步行导航入口*/
 		Button arWalkBtn = (Button) findViewById(R.id.btn_walknavi_ar);
@@ -97,8 +120,8 @@ public class ARActivity extends AppCompatActivity {
 			}
 		});
 
-		startPt = new LatLng(40.057038,116.307899);
-		endPt = new LatLng(40.035916, 116.340722);
+		startPt = new LatLng(startx,starty);
+		endPt = new LatLng(endx, endy);
 
         /*构造导航起终点参数对象*/
 		BikeRouteNodeInfo bikeStartNode = new BikeRouteNodeInfo();
@@ -117,13 +140,79 @@ public class ARActivity extends AppCompatActivity {
 		initOverlay();
 	}
 
+	private void getLocation() {
+		bdLocationManager = BDLocationManager.getInstance();
+		bdLocationListener = new BDLocationListener() {
+			@Override
+			public void onLocationChanged(Location location) {
+
+			}
+
+			@Override
+			public void onStatusChanged(String provider, int status, Bundle extras) {
+
+			}
+
+			@Override
+			public void onProviderEnabled(String provider) {
+
+			}
+
+			@Override
+			public void onProviderDisabled(String provider) {
+
+			}
+		};
+		bdLocationManager.addListener(bdLocationListener);
+		bdLocationManager.startLoc();
+		locationManager = bdLocationManager.getmSysLocManager();
+		Location location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+		starty = location.getLongitude();
+		startx = location.getLatitude();
+		requestPermission();
+	}
+
+	private void initData() {
+		Intent intent = getIntent();
+		endx = intent.getDoubleExtra("Local_x",0);
+		endy = intent.getDoubleExtra("Local_y",0);
+	}
+
+	private void initLocation() {
+		locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+		LocationProvider gpsProvider = locationManager.getProvider(LocationManager.GPS_PROVIDER);//1.通过GPS定位，较精确。也比較耗电
+		LocationProvider netProvider = locationManager.getProvider(LocationManager.NETWORK_PROVIDER);//2.通过网络定位。对定位精度度不高或省点情况可考虑使用
+		if (locationManager.getProvider(LocationManager.NETWORK_PROVIDER) != null || locationManager.getProvider(LocationManager.GPS_PROVIDER) != null) {
+       /*
+		* 进行定位
+        * provider:用于定位的locationProvider字符串:LocationManager.NETWORK_PROVIDER/LocationManager.GPS_PROVIDER
+		* minTime:时间更新间隔。单位：ms
+        * minDistance:位置刷新距离，单位：m
+		* listener:用于定位更新的监听者locationListener
+		*/
+			locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 500,10, myLocationListener);
+
+			Location location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+			starty = location.getLongitude();
+			startx = location.getLatitude();
+			Log.e(TAG,startx+"  "+starty);
+		} else {
+			//无法定位：1、提示用户打开定位服务；2、跳转到设置界面
+			Toast.makeText(this, "无法定位，请打开定位服务", Toast.LENGTH_SHORT).show();
+			Intent i = new Intent();
+			i.setAction(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+			startActivity(i);
+		}
+	}
+
+
 	/**
 	 * 初始化地图状态
 	 */
 	private void initMapStatus(){
 		mBaiduMap = mMapView.getMap();
 		MapStatus.Builder builder = new MapStatus.Builder();
-		builder.target(new LatLng(40.048424, 116.313513)).zoom(15);
+		builder.target(new LatLng(startx, starty)).zoom(15);
 		mBaiduMap.setMapStatus(MapStatusUpdateFactory.newMapStatus(builder.build()));
 	}
 

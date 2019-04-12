@@ -56,6 +56,7 @@ public class StepFragment extends Fragment{
 		viewPager = mainActivity.getViewPager();
 		Pos = mainActivity.getTabLayout().getSelectedTabPosition();
 		stepVO = mainActivity.getStepVOList(Pos);
+		locationVO = stepVO.getLocation();
 		Log.e(Tag, "step id"+stepVO.toString()+" "+" view pos" +viewPager.getCurrentItem());
 	}
 
@@ -85,6 +86,10 @@ public class StepFragment extends Fragment{
 			@Override
 			public void onClick(View v) {
 				Intent intent = new Intent(getActivity(), ARActivity.class);
+				double x = locationVO.getX();
+				double y = locationVO.getY();
+				intent.putExtra("Local_x",x);
+				intent.putExtra("Local_y",y);
 				startActivity(intent);
 			}
 		});

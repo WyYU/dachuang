@@ -26,7 +26,6 @@ public class BDLocationManager {
 
     private BDLocationManager() {
         initGPS(JNIInitializer.getCachedContext());
-
     }
 
     public static BDLocationManager getInstance() {
@@ -96,5 +95,9 @@ public class BDLocationManager {
                 listener.onProviderDisabled(provider);
             }
         }
+    }
+
+    public LocationManager getmSysLocManager() {
+        return mSysLocManager;
     }
 }
