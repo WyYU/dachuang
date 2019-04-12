@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">dachuang</string>
+    <dimen name="textsize">24dp</dimen>
+</resources>
