@@ -1,5 +1,4 @@
 package com.example.dell.dachuang.Java;
-
 /*
  * version:1.0
  * class name:LocationVO
@@ -10,6 +9,8 @@ public class LocationVO {
 	
 	private String locationID;
 	private String locationName;
+	private double X;
+	private double Y;
 
 	public String getLocationName() {
 		return locationName;
@@ -26,6 +27,23 @@ public class LocationVO {
 	public void setLocationID(String locationID) {
 		this.locationID = locationID;
 	}
+
+	public double getX() {
+		return X;
+	}
+
+	public void setX(double x) {
+		X = x;
+	}
+
+	public double getY() {
+		return Y;
+	}
+
+	public void setY(double y) {
+		Y = y;
+	}
+	
 	
 	
 }

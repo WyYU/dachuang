@@ -13,6 +13,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.dell.dachuang.Activity.ARActivity;
+import com.example.dell.dachuang.Java.LocationVO;
 import com.example.dell.dachuang.Java.StepVO;
 import com.example.dell.dachuang.Activity.MainActivity;
 import com.example.dell.dachuang.R;
@@ -32,6 +33,7 @@ public class StepFragment extends Fragment{
 	TextView desView;
 	MainActivity mainActivity;
 	ViewPager viewPager;
+	private LocationVO locationVO;
 	int Pos;
 
 	@Override
@@ -84,7 +86,6 @@ public class StepFragment extends Fragment{
 			public void onClick(View v) {
 				Intent intent = new Intent(getActivity(), ARActivity.class);
 				startActivity(intent);
-
 			}
 		});
 

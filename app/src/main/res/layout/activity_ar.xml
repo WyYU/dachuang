@@ -5,5 +5,16 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.example.dell.dachuang.Activity.ARActivity">
+    <com.baidu.mapapi.map.MapView
+        android:id="@+id/baidu_map_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clickable="true">
+    </com.baidu.mapapi.map.MapView>
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/ar_btn"
+        android:text="Ar导航"/>
 
 </android.support.constraint.ConstraintLayout>
